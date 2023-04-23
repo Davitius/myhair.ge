@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use function Ramsey\Collection\Map\get;
 
+
 class BeautysalonController extends Controller
 {
     public function index()
@@ -24,42 +25,8 @@ class BeautysalonController extends Controller
         $salon = DB::table('salons')->where('user_id', Auth::user()->id)->first();
 //        $salon = Salon::where('user_id', Auth::user()->id)->first();
 
-
-        $wDays = [
-            "ორშაბათი",
-            "სამშაბათი",
-            "ოთხშაბათი",
-            "ხუთშაბათი",
-            "პარასკევი",
-            "შაბათი .",
-            "კვირა"
-        ];
-        $checkWD = [];
-        foreach ($wDays as $wDay) {
-            $searchWD = Salon::where('user_id', Auth::user()->id)->where('work_d', 'LIKE', "%{$wDay}%")->first();
-            $checkWD[] = $searchWD;
-        }
-
-        $services = [
-            "თმის შეჭრა, შეღებვა, ვარცხნილობა",
-            "წვერის გაპარსვა",
-            "მაკიაჟი",
-            "მანიკური",
-            "პედიკური",
-            "წარბები და წამწამები",
-            "სადღესასწაულო მაკიაჟი, ვარცხნილობა",
-            "ტატუირება",
-            "სპა",
-            "ეპილაცია",
-            "სოლარიუმი",
-            "კანის მოვლა"
-        ];
-        $checkService = [];
-        foreach ($services as $service) {
-            $search = Salon::where('user_id', Auth::user()->id)->where('service', 'LIKE', "%{$service}%")->first();
-            $checkService[] = $search;
-        }
-
+        $checkWD = $this->checkWD();
+        $checkService = $this->checkService();
 
         if (isset($salon)) {
             $staffs = DB::table('users')->where('sal_id', $salon->id)->orderBy('saladdtime', 'DESC')->paginate(10);
@@ -82,41 +49,8 @@ class BeautysalonController extends Controller
 
         $citys = Citylist::orderBy('city')->get();
 
-
-        $wDays = [
-            "ორშაბათი",
-            "სამშაბათი",
-            "ოთხშაბათი",
-            "ხუთშაბათი",
-            "პარასკევი",
-            "შაბათი .",
-            "კვირა"
-        ];
-        $checkWD = [];
-        foreach ($wDays as $wDay) {
-            $searchWD = Salon::where('user_id', Auth::user()->id)->where('work_d', 'LIKE', "%{$wDay}%")->first();
-            $checkWD[] = $searchWD;
-        }
-
-        $services = [
-            "თმის შეჭრა, შეღებვა, ვარცხნილობა",
-            "წვერის გაპარსვა",
-            "მაკიაჟი",
-            "მანიკური",
-            "პედიკური",
-            "წარბები და წამწამები",
-            "სადღესასწაულო მაკიაჟი, ვარცხნილობა",
-            "ტატუირება",
-            "სპა",
-            "ეპილაცია",
-            "სოლარიუმი",
-            "კანის მოვლა"
-        ];
-        $checkService = [];
-        foreach ($services as $service) {
-            $search = Salon::where('user_id', Auth::user()->id)->where('service', 'LIKE', "%{$service}%")->first();
-            $checkService[] = $search;
-        }
+        $checkWD = $this->checkWD();
+        $checkService = $this->checkService();
 
 
         return view('Job.Beautysalon', compact('salon', 'staffs', 's_staffs', 'citys', 'checkService', 'checkWD'));
@@ -143,7 +77,6 @@ class BeautysalonController extends Controller
             $data['location'] = $request->input('location');
 
             unset($data['concent']);
-
 
             Salon::Create($data);
 
@@ -198,4 +131,47 @@ class BeautysalonController extends Controller
 
         return redirect()->route('Job.Beautysalon');
     }
+
+
+    private function checkWD() {
+        $wDays = [
+            "ორშაბათი",
+            "სამშაბათი",
+            "ოთხშაბათი",
+            "ხუთშაბათი",
+            "პარასკევი",
+            "შაბათი .",
+            "კვირა"
+        ];
+        $checkWD = [];
+        foreach ($wDays as $wDay) {
+            $searchWD = Salon::where('user_id', Auth::user()->id)->where('work_d', 'LIKE', "%{$wDay}%")->first();
+            $checkWD[] = $searchWD;
+        }
+        return $checkWD;
+    }
+
+    private function checkService() {
+        $services = [
+            "თმის შეჭრა, შეღებვა, ვარცხნილობა",
+            "წვერის გაპარსვა",
+            "მაკიაჟი",
+            "მანიკური",
+            "პედიკური",
+            "წარბები და წამწამები",
+            "სადღესასწაულო მაკიაჟი, ვარცხნილობა",
+            "ტატუირება",
+            "სპა",
+            "ეპილაცია",
+            "სოლარიუმი",
+            "კანის მოვლა"
+        ];
+        $checkService = [];
+        foreach ($services as $service) {
+            $search = Salon::where('user_id', Auth::user()->id)->where('service', 'LIKE', "%{$service}%")->first();
+            $checkService[] = $search;
+        }
+        return $checkService;
+    }
 }
+
